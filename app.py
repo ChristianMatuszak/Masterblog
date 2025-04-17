@@ -102,6 +102,43 @@ def delete(post_id):
     return redirect("/")
 
 
+@app.route("/update/<int:post_id>", methods=["GET", "POST"])
+def update(post_id):
+    """
+    Handles both GET and POST requests for updating a blog post.
+    - GET: Retrieves the current blog post by "post_id" and show the update form.
+    - POST: Updates the blog post with the new data from the form and redirects it.
+    Args:
+        post_id (int): The ID of the blog post to be updated.
+    Returns:
+        Response: Renders the update form (GET) or redirects to home (POST)
+    """
+
+    post = fetch_post_by_id(post_id)
+
+    if post is None:
+        return "Post not found", 404
+
+    if request.method == "POST":
+        post["author"] = request.form["author"]
+        post["title"] = request.form["title"]
+        post["content"] = request.form["content"]
+
+        blog_posts = load_posts()
+
+        for i, existing_post in enumerate(blog_posts):
+            if existing_post["id"] == post_id:
+                blog_posts[i] = post
+                break
+
+        with open("data/post.json", "w") as file:
+            json.dump(blog_posts, file, indent=4)  # type: ignore
+
+        return redirect("/")
+
+    return render_template("update.html", post=post)
+
+
 def get_next_id():
     """
     Calculates the next available unique ID for a new blog post.
@@ -116,6 +153,24 @@ def get_next_id():
     if posts:
         return max(post["id"] for post in posts) + 1
     return 1
+
+
+def fetch_post_by_id(post_id):
+    """
+    Fetches a blog post by its ID.
+    This function loads all blog posts and searches for the one with the
+    specified ID. If found, it returns the post; otherwise, it returns None.
+
+    Args:
+        post_id (int): The ID of the blog post to fetch.
+    Returns:
+        dict or None: The blog post dictionary if found, None otherwise.
+    """
+    posts = load_posts()
+    for post in posts:
+        if post["id"] == post_id:
+            return post
+    return None
 
 
 def id_exists(post_id, posts):

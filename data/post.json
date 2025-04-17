@@ -3,6 +3,12 @@
         "id": 1,
         "author": "John Doe",
         "title": "First Post",
-        "content": "This is my first post."
+        "content": "This is my first post.\r\n"
+    },
+    {
+        "id": 2,
+        "author": "John Doe",
+        "title": "First Post and Update",
+        "content": "This is my first post.\r\nThis is my first update"
     }
 ]
