@@ -80,6 +80,28 @@ def add():
         return render_template("add.html")
 
 
+@app.route("/delete/<int:post_id>")
+def delete(post_id):
+    """
+    Handles the deletion of a blog post by its ID.
+    This function finds the blog post with the given "post_id", removes it
+    from the "blog_posts" list, and saves the updated list back to the JSON file.
+    Afterward, it redirects the user to the home page.
+
+    Args:
+        post_id (int): The ID of the blog post to be deleted.
+    Returns:
+        Response: A redirect response to the home page after deletion.
+    """
+    blog_posts = load_posts()
+    blog_posts = [post for post in blog_posts if post["id"] != post_id]
+
+    with open("data/post.json", "w") as file:
+        json.dump(blog_posts, file, indent=4)  # type: ignore
+
+    return redirect("/")
+
+
 def get_next_id():
     """
     Calculates the next available unique ID for a new blog post.
